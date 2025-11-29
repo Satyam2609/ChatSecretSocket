@@ -9,7 +9,7 @@ import UserGroup from "./models/user.group.js"; // backend folder structure ke h
 dotenv.config(); // Render me relative path ka tension nahi
 
 // Connect MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URL, {
 })
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.log("MongoDB connection error:", err));
