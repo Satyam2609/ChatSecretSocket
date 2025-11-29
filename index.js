@@ -5,7 +5,6 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserGroup from "./models/user.group.js"; // backend folder structure ke hisab se
-import { User } from "./models/user.model.js";
 
 dotenv.config(); // Render me relative path ka tension nahi
 
