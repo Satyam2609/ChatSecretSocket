@@ -57,7 +57,7 @@ io.on("connection", async (socket) => {
             await group.save();
         }
         socket.join(roomId);
-        io.emit("roomlist", await UserGroup.find().distinct("groupName"));
+        io.emit("roomlist", await UserGroup.find({members:username} , {groupName:1,_id:0}))
         console.log(`User ${username} joined room ${roomId}`);
     });
 
@@ -109,7 +109,7 @@ io.on("connection", async (socket) => {
 
     socket.on("acceptResponse" , async({access , roomId , username}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
-        if(access == "yes"){
+        if(access == "yes" ){
             group.members.push(username)
             await group.save()
         }
