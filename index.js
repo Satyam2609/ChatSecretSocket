@@ -40,7 +40,7 @@ io.on("connection", async (socket) => {
         if(!group){
             socket.emit("group not found")
         }
-        socket.emit("roomlist" , group)
+        socket.emit("roomlist" , group.map(g => g.groupName))
     })
 
     // Create Room
