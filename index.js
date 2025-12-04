@@ -96,12 +96,11 @@ io.on("connection", async (socket) => {
         if (!group) return socket.emit("error", "Room does not exist");
         
         const creatorSocketId = userSocket.get(group.creator);
-if (creatorSocketId) {
+
     group.userRequest.push({roomId , username})
     await group.save()
-    const requestadd = group.userRequest
-    io.to(creatorSocketId).emit("RequerstjoinRoom", {requests:requestadd});
-}
+    io.to(creatorSocketId).emit("RequerstjoinRoom", {request:group.userRequest});
+
         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
             message: msg.message,
