@@ -115,6 +115,9 @@ if (creatorSocketId) {
 
     socket.on("acceptResponse" , async({access , roomId , username}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
+        console.log(access)
+        console.log(roomId)
+        console.log(username)
         if(access == "yes" ){
             group.members.push(username)
             await group.save()
