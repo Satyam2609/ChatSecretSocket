@@ -34,7 +34,7 @@ const io = new Server(server, {
 io.on("connection", async (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    socket.on("userna" , async({userna}) => {
+    socket.on("userna" , async(userna) => {
         const group = await UserGroup.find({members:userna} , {groupName:1,_id:0})
         console.log(group)
         if(!group){
