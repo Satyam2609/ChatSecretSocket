@@ -63,7 +63,7 @@ io.on("connection", async (socket) => {
             await group.save();
         }
         socket.join(roomId);
-        const userGroups = await UserGroup.find({ members: username }, { groupName: 1, _id: 0 }).lean();
+       const userGroups = await UserGroup.find({ members: username }, { groupName: 1, _id: 0 }).lean();
     io.to(socket.id).emit("roomlist", (userGroups || []).map(g => g.groupName));
         console.log(`User ${username} joined room ${roomId}`);
     });
@@ -97,7 +97,10 @@ io.on("connection", async (socket) => {
         
         const creatorSocketId = userSocket.get(group.creator);
 if (creatorSocketId) {
-    io.to(creatorSocketId).emit("RequerstjoinRoom", { roomId, request: username });
+    group.userRequest.push({roomId , username})
+    await group.save()
+    const requestadd = group.userRequest
+    io.to(creatorSocketId).emit("RequerstjoinRoom", {requests:requestadd});
 }
         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
@@ -116,7 +119,7 @@ if (creatorSocketId) {
 
     socket.on("acceptResponse" , async({access , roomId , username}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
-        if(access == "yes" ){
+        if(access == "yes" && !group.members.includes(username)){
             group.members.push(username)
             await group.save()
         }

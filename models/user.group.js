@@ -23,6 +23,12 @@ const userGroupSchema = new mongoose.Schema({
     required:true,
     default:[]
   },
+  userRequest:{
+    type:[{
+      roomId:String,
+      username:String
+    }]
+  }
   
   
 
