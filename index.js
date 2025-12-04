@@ -31,10 +31,14 @@ const io = new Server(server, {
     }
 });
 
+const userSocket = new Map()
+
 io.on("connection", async (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("userna" , async(userna) => {
+        socket.username = userna
+        userSocket.set(userna, socket.id);
         const group = await UserGroup.find({members:userna} , {groupName:1,_id:0})
         console.log(group)
         if(!group){
@@ -42,6 +46,8 @@ io.on("connection", async (socket) => {
         }
         socket.emit("roomlist" , group.map(g => g.groupName))
     })
+
+
 
     // Create Room
     socket.on("createRoom", async ({ roomId, username }) => {
@@ -88,10 +94,10 @@ io.on("connection", async (socket) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", "Room does not exist");
         
-        io.to(group.creator).emit("RequerstjoinRoom" , {
-            roomId,
-            request:username
-        })
+        const creatorSocketId = userSocket.get(group.creator);
+if (creatorSocketId) {
+    io.to(creatorSocketId).emit("RequerstjoinRoom", { roomId, request: username });
+}
         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
             message: msg.message,
