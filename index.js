@@ -101,6 +101,14 @@ io.on("connection", async (socket) => {
     await group.save()
     io.to(creatorSocketId).emit("RequerstjoinRoom", {request:group.userRequest});
 
+        const messagesWithRoom = group.messages.map(msg => ({
+            usernamesend: msg.sender,
+            messagegee: msg.message,
+            timestamp: msg.timestamp,
+            roomIdIn: msg.groupName
+        }));
+        io.to(socket.id).emit("previousMessages", messagesWithRoom);
+
         // Send members & admin info to everyone
         const adminUser = group.creator;
         io.emit("members", { members: group.members, adminUserName: adminUser });
@@ -114,18 +122,6 @@ io.on("connection", async (socket) => {
             group.members.push(username)
             await group.save()
         }
-    })
-
-    socket.on("selectRoom" ,async ({ roomId})  => {
-        const group = await UserGroup.findOne({ groupName: roomId });
-         const messagesWithRoom = group.messages.map(msg => ({
-            username: msg.sender,
-            message: msg.message,
-            timestamp: msg.timestamp,
-            roomId
-        }));
-        io.to(socket.id).emit("previousMessages", messagesWithRoom);
-
     })
 
 
