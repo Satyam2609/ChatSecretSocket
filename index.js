@@ -63,7 +63,8 @@ io.on("connection", async (socket) => {
             await group.save();
         }
         socket.join(roomId);
-        io.emit("roomlist", await UserGroup.find({members:username} , {groupName:1,_id:0}))
+        const grouplist = await UserGroup.find({members:username} , {groupName:1,_id:0})
+        io.emit("roomlist", grouplist)
         console.log(`User ${username} joined room ${roomId}`);
     });
 
