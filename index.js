@@ -84,7 +84,7 @@ io.on("connection", async (socket) => {
     });
 
     // Join room
-    socket.on("joinRoom", async ({ roomId, username , access}) => {
+    socket.on("joinRoom", async ({ roomId, username}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", "Room does not exist");
         
@@ -92,12 +92,6 @@ io.on("connection", async (socket) => {
             roomId,
             request:username
         })
-
-        if(access == "yes"){
-group.members.push(username);
-            await group.save();
-        }
-
         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
             message: msg.message,
@@ -112,6 +106,14 @@ group.members.push(username);
 
         socket.join(roomId);
     });
+
+    socket.on("acceptResponse" , async({access , roomId , username}) => {
+        const group = await UserGroup.findOne({ groupName: roomId });
+        if(access == "yes"){
+            group.members.push(username)
+            await group.save()
+        }
+    })
 
 
     // Room messages
