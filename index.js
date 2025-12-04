@@ -84,16 +84,20 @@ io.on("connection", async (socket) => {
     });
 
     // Join room
-    socket.on("joinRoom", async ({ roomId, username }) => {
+    socket.on("joinRoom", async ({ roomId, username , access}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", "Room does not exist");
+        
+        io.to(group.creator).emit("RequerstjoinRoom" , {
+            roomId,
+            request:username
+        })
 
-        if (!group.members.includes(username)) {
-            group.members.push(username);
+        if(access == "yes"){
+group.members.push(username);
             await group.save();
         }
 
-        // Send previous messages only to this user
         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
             message: msg.message,
@@ -108,6 +112,7 @@ io.on("connection", async (socket) => {
 
         socket.join(roomId);
     });
+
 
     // Room messages
     socket.on("roomMessage", async ({ roomId, username, message }) => {
