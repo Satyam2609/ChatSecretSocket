@@ -127,7 +127,10 @@ if (creatorSocketId) {
         if(access == "yes" && !group.members.includes(username)){
             group.members.push(username)
             await group.save()
-            await UserGroup.userRequest.findOneAndDelete({roomId:roomId})
+            await UserGroup.updateOne(
+                {groupName:roomId},
+                {$pull:{userRequest:{username:username}}}
+            )
             await group.save()
             
         }
