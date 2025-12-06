@@ -99,20 +99,25 @@ io.on("connection", async (socket) => {
 if (creatorSocketId) {
     io.to(creatorSocketId).emit("RequerstjoinRoom", { roomId, request: username });
 }
-        const messagesWithRoom = group.messages.map(msg => ({
+    });
+    socket.on("selectRoom" , async({roomId}) => {
+        const group = await UserGroup.findOne({groupName:roomId})
+        if(!group){
+            socket.emit("group does not found")
+        }
+         const messagesWithRoom = group.messages.map(msg => ({
             username: msg.sender,
             message: msg.message,
             timestamp: msg.timestamp,
             roomId
         }));
         io.to(socket.id).emit("previousMessages", messagesWithRoom);
-
-        // Send members & admin info to everyone
         const adminUser = group.creator;
         io.emit("members", { members: group.members, adminUserName: adminUser });
 
         socket.join(roomId);
-    });
+
+    })
 
     socket.on("acceptResponse" , async({access , roomId , username}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
