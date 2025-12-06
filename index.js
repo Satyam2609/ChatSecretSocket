@@ -97,7 +97,10 @@ io.on("connection", async (socket) => {
         
         const creatorSocketId = userSocket.get(group.creator);
 if (creatorSocketId) {
-    io.to(creatorSocketId).emit("RequerstjoinRoom", { roomId, request: username });
+   group.userRequest.push({roomId, request: username})
+   await group.save()
+   const userRequest = group.userRequest
+    io.to(creatorSocketId).emit("RequerstjoinRoom", { request:userRequest });
 }
     });
     socket.on("selectRoom" , async({roomId}) => {
