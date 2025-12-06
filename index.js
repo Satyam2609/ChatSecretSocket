@@ -126,8 +126,10 @@ if (creatorSocketId) {
         const group = await UserGroup.findOne({ groupName: roomId });
         if(access == "yes" && !group.members.includes(username)){
             group.members.push(username)
-            await UserGroup.userRequest.findOneAndDelete({roomId , username})
             await group.save()
+            await UserGroup.userRequest.findOneAndDelete({roomId})
+            await group.save()
+            
         }
     })
 
