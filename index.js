@@ -97,7 +97,7 @@ io.on("connection", async (socket) => {
         
         const creatorSocketId = userSocket.get(group.creator);
 if (creatorSocketId) {
-   group.userRequest.push({roomId, request: username})
+   group.userRequest.push({roomId, username})
    await group.save()
    const userRequest = group.userRequest
     io.to(creatorSocketId).emit("RequerstjoinRoom", { request:userRequest });
