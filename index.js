@@ -108,14 +108,20 @@ if (creatorSocketId) {
     
          const messagesWithRoom = group.messages.map(msg => {
             const timesender = new Date(msg.timestamp)
-            const time = timesender.toLocaleTimeString("en-IN", {
+            const time = timesender.toLocaleDatString("en-IN", {
   hour: "2-digit",
-  minute: "2-digit"
+  minute: "2-digit",
 });
+const date = timesender.toLocaleDateString("en-In" , {
+    day:"2-digits",
+  month:"2-digit",
+  year:"numeric"
+})
            return{
              username: msg.sender,
             message: msg.message,
             timestamp: time,
+            timeDate:date,
             roomId
            }
         });
