@@ -58,10 +58,7 @@ io.on("connection", async (socket) => {
                 members: [username],
                 creator: username,
             });
-        } else if (!group.members.includes(username)) {
-            group.members.push(username);
-            await group.save();
-        }
+        } 
         socket.join(roomId);
        const userGroups = await UserGroup.find({ members: username }, { groupName: 1, _id: 0 }).lean();
     io.to(socket.id).emit("roomlist", (userGroups || []).map(g => g.groupName));
