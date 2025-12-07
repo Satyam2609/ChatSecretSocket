@@ -105,12 +105,20 @@ if (creatorSocketId) {
         if(!group){
             socket.emit("group does not found")
         }
-         const messagesWithRoom = group.messages.map(msg => ({
-            username: msg.sender,
+    
+         const messagesWithRoom = group.messages.map(msg => {
+            const timesender = new Date(msg.timestamp)
+            const time = timesender.toLocaleTimeString("en-IN", {
+  hour: "2-digit",
+  minute: "2-digit"
+});
+           return{
+             username: msg.sender,
             message: msg.message,
-            timestamp: msg.timestamp,
+            timestamp: time,
             roomId
-        }));
+           }
+        });
         io.to(socket.id).emit("previousMessages", messagesWithRoom);
         const adminUser = group.creator;
         io.emit("members", { members: group.members, adminUserName: adminUser });
