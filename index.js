@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserGroup from "./models/user.group.js"; // backend folder structure ke hisab se
+import { timeStamp } from "console";
 
 dotenv.config(); // Render me relative path ka tension nahi
 
@@ -152,9 +153,14 @@ else{
     socket.on("roomMessage", async ({ roomId, username, message }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
+        const now = new Date();
+    const timeset = now.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
         group.messages.push({ sender: username, message });
         await group.save();
-        io.to(roomId).emit("getRoomMessage", { roomId, username, message });
+        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp: timeset});
     });
 
     // Disconnect
