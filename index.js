@@ -122,7 +122,7 @@ else{
            return{
              username: msg.sender,
             message: msg.message,
-            replyto:msg.replyto ,
+            replyto:msg.replyMsg ,
             timestamp: time,
             roomId
            }
