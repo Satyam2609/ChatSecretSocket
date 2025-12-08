@@ -94,10 +94,16 @@ io.on("connection", async (socket) => {
         
         const creatorSocketId = userSocket.get(group.creator);
 if (creatorSocketId && group.creator !== username) {
+    const alreadyExsist = group.userRequest.some(req => req.roomId === roomId && req.username === username)
+    if(!alreadyExsist){
    group.userRequest.push({roomId, username})
    await group.save()
    const userRequest = group.userRequest
     io.to(creatorSocketId).emit("RequerstjoinRoom", { request:userRequest });
+    }
+}
+else{
+    socket.emit("you are a creator & Have a problem")
 }
     });
     socket.on("selectRoom" , async({roomId}) => {
