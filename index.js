@@ -122,6 +122,7 @@ else{
            return{
              username: msg.sender,
             message: msg.message,
+            replyto:msg.replyto,
             timestamp: time,
             roomId
            }
@@ -158,7 +159,7 @@ else{
         hour: "2-digit",
         minute: "2-digit"
     });
-        group.messages.push({ sender: username, message });
+        group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null});
         await group.save();
         io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto});
     });
