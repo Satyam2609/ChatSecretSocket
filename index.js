@@ -159,14 +159,10 @@ else{
         hour: "2-digit",
         minute: "2-digit"
     });
-        if(replyto){
+        
             group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null});
             await group.save();
-        }
-        else{
-            group.messages.push({ sender:username, message})
-            await group.save();
-        }
+       
         
         io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto});
     });
