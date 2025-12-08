@@ -19,7 +19,7 @@ const userGroupSchema = new mongoose.Schema({
         sender:String,
         message:String,
         timestamp:{type:Date, default:Date.now},
-        replyto:{
+        replyMsg:{
           username:String,
           message:String
         }
