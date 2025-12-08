@@ -95,8 +95,7 @@ io.on("connection", async (socket) => {
         const creatorSocketId = userSocket.get(group.creator);
 if (creatorSocketId && group.creator !== username) {
     const alreadyExsist = group.userRequest.some(req => req.roomId === roomId && req.username === username)
-    const member = group.members.some(req => req.username === username)
-    if(!alreadyExsist && !member){
+    if(!alreadyExsist && !group.members.includes(username)){
    group.userRequest.push({roomId, username})
    await group.save()
    const userRequest = group.userRequest
