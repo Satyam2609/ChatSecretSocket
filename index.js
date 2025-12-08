@@ -93,7 +93,7 @@ io.on("connection", async (socket) => {
         if (!group) return socket.emit("error", "Room does not exist");
         
         const creatorSocketId = userSocket.get(group.creator);
-if (creatorSocketId) {
+if (creatorSocketId && group.creator !== username) {
    group.userRequest.push({roomId, username})
    await group.save()
    const userRequest = group.userRequest
