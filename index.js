@@ -150,7 +150,7 @@ else{
 
 
     // Room messages
-    socket.on("roomMessage", async ({ roomId, username, message }) => {
+    socket.on("roomMessage", async ({ roomId, username, message , replyto}) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
         const now = new Date();
@@ -160,7 +160,7 @@ else{
     });
         group.messages.push({ sender: username, message });
         await group.save();
-        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp: timeset});
+        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto});
     });
 
     // Disconnect
