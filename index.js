@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserGroup from "./models/user.group.js"; // backend folder structure ke hisab se
 import { timeStamp } from "console";
+import uploadCloudinary from "./utils/cloudinary.js";
 
 dotenv.config(); // Render me relative path ka tension nahi
 
@@ -151,10 +152,21 @@ else{
 
 
     // Room messages
-    socket.on("roomMessage", async ({ roomId, username, message , replyto}) => {
+    socket.on("roomMessage", async ({ roomId, username, message , replyto , imageto }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
-        const now = new Date();
+        if(imageto){
+            const base64Data = imageto.replace(/^data:image\/\w+;base64,/, "");
+            const buffer = Buffer.from(base64Data, 'base64')
+            const fs = await import('fs');
+            const path = `./uploads/${Date.now()}_${username}.png`
+            fs.writeFileSync(path , buffer)
+            const imageUrl = await uploadCloudinary(path)
+            group.messages.push({sender:username , message , replyMsg:replyto ? {username:replyto.username , message:replyto.message}: null , ImageSend:imageUrl})
+        }
+
+        
+        const now = new Date.now();
     const timeset = now.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit"
@@ -164,7 +176,7 @@ else{
             await group.save();
        
         
-        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto});
+        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto , imageto});
     });
 
     // Disconnect
