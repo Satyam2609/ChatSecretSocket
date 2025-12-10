@@ -165,7 +165,7 @@ else{
             imageUrl = await uploadCloudinary(path)
         }
 
-        const now = new Date.now();
+        const now = new Date();
     const timeset = now.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit"
