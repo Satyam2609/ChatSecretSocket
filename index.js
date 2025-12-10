@@ -125,6 +125,7 @@ else{
             message: msg.message,
             replyto:msg.replyMsg ,
             timestamp: time,
+            imageto: msg.ImageSend || null,
             roomId
            }
         });
