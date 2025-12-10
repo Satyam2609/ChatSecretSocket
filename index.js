@@ -125,7 +125,6 @@ else{
             message: msg.message,
             replyto:msg.replyMsg ,
             timestamp: time,
-            imageto: msg.ImageSend || null,
             roomId
            }
         });
@@ -153,18 +152,9 @@ else{
 
 
     // Room messages
-    socket.on("roomMessage", async ({ roomId, username, message , replyto , imageto }) => {
+    socket.on("roomMessage", async ({ roomId, username, message , replyto }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
-        let imageUrl;
-        if(imageto){
-            const base64Data = imageto.replace(/^data:image\/\w+;base64,/, "");
-            const buffer = Buffer.from(base64Data, 'base64')
-            const fs = await import('fs');
-            const path = `./uploads/${new Date()}_${username}.png`
-            fs.writeFileSync(path , buffer)
-            imageUrl = await uploadCloudinary(path)
-        }
 
         const now = new Date();
     const timeset = now.toLocaleTimeString("en-IN", {
@@ -172,7 +162,7 @@ else{
         minute: "2-digit"
     });
 
-            group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null , ImageSend:imageUrl||null});
+            group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null});
             await group.save();
        
         
