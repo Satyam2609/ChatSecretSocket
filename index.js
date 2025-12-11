@@ -155,7 +155,7 @@ else{
     socket.on("roomMessage", async ({ roomId, username, message , replyto }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
-        const image = group.messages.ImageSend;
+        const image = group.messages.find(msg => msg.ImageSend)
         console.log(image)
 
         const now = new Date();
@@ -163,17 +163,11 @@ else{
         hour: "2-digit",
         minute: "2-digit"
     });
-    
 
             group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null});
             await group.save();
 
-        if(image){
-            io.to(roomId).emit("newRoomMessage", { username, message, timestamp: timeset, replyto , ImageSend:image });
-        }
-        else{
-            io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto});
-        }
+        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto , imageto:image || null });
     });
 
     // Disconnect
