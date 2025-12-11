@@ -22,6 +22,7 @@ app.use(express.json());
 // CORS setup
 app.use(cors({
     origin: process.env.FRONTEND_URL || "*",
+     credentials: true,
 }));
 
 // HTTP + Socket.io setup
