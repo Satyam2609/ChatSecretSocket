@@ -155,7 +155,8 @@ else{
     socket.on("roomMessage", async ({ roomId, username, message , replyto }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
-        const image = group.messages.find(msg => msg.sender === username && msg.ImageSend)
+        const image = group.messages.some(msg => msg.sender === username && msg.ImageSend)
+        console.log(image)
 
         const now = new Date();
     const timeset = now.toLocaleTimeString("en-IN", {
