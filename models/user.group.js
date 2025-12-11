@@ -22,6 +22,9 @@ const userGroupSchema = new mongoose.Schema({
         replyMsg:{
           username:String,
           message:String
+        },
+        ImageSend:{
+          type:String,
         }
     }],
     required:true,
