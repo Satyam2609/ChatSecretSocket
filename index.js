@@ -155,38 +155,23 @@ else{
 
 
     // Room messages
-socket.on("roomMessage", async ({ roomId, username, message, replyto, image }) => {
-
-    const group = await UserGroup.findOne({ groupName: roomId });
-    if (!group) return;
-
+    socket.on("roomMessage", async ({ roomId, username, message , replyto , image }) => {
+        const group = await UserGroup.findOne({ groupName: roomId });
+        if (!group) return socket.emit("error", `Room ${roomId} does not exist`);
+        console.log(group.messages)
+        
     const now = new Date();
-    const timestamp = now.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit"
+    const timeset = now.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
     });
 
-    group.messages.push({
-        roomId,
-        username,
-        message,
-        replyto,
-        imageto: image || null,   // <-- IMPORTANT
-        timestamp,
+            group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null , ImageSend:image});
+            await group.save();
+            console.log(group.messages)
+        
+        io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto , imageto:image });
     });
-
-    await group.save();
-
-    io.to(roomId).emit("getRoomMessage", {
-        roomId,
-        username,
-        message,
-        imageto: image || null,
-        timestamp,
-        replyto
-    });
-});
-
 
     // Disconnect
     socket.on("disconnect", () => {
