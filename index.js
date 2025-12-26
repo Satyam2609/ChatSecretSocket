@@ -4,9 +4,10 @@ import cors from "cors";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import UserGroup from "./models/user.group.js"; // backend folder structure ke hisab se
-import { timeStamp } from "console";
-import uploadCloudinary from "./utils/cloudinary.js";
+import UserGroup from "./models/user.group.js";
+import { Recommend } from "./models/user.Recommendation.js"; // backend folder structure ke hisab se
+
+
 
 dotenv.config(); // Render me relative path ka tension nahi
 
@@ -69,12 +70,27 @@ io.on("connection", async (socket) => {
     });
 
     // Typing events
-    socket.on("typing", ({ roomId, username }) => {
-        socket.to(roomId).emit("typing", { username });
+    socket.on("typing", async({ roomId, username , message}) => {
+        const group = await UserGroup.findOne({ groupName: roomId });
+        if(!group) return;
+        const keymessage = await Recommend.findOne({
+  $or: [
+    { key: { $regex: message.trim(), $options: 'i' } },
+  ]
+});
+
+        console.log("keymessage",keymessage)
+        if(keymessage){
+            socket.to(roomId).emit("typing", { username });
+            socket.emit("recommendation", { recommendations: keymessage.recommendedMessages });
+        }
+        socket.to(roomId).emit("typing", { username});
     });
     socket.on("stopTyping", ({ roomId, username }) => {
         socket.to(roomId).emit("hidetyping", { username });
     });
+
+              
 
     // Delete room
     socket.on("delete", async (roomId) => {
@@ -168,7 +184,6 @@ else{
 
             group.messages.push({ sender: username, message , replyMsg:replyto ? {username:replyto.username , message:replyto.message} : null , ImageSend:image});
             await group.save();
-            console.log(group.messages)
         
         io.to(roomId).emit("getRoomMessage", { roomId, username, message  , timestamp:timeset , replyto , imageto:image });
     });
