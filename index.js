@@ -70,26 +70,31 @@ io.on("connection", async (socket) => {
     });
 
     // Typing events
-    socket.on("typing", async({ roomId, username , message}) => {
-        const group = await UserGroup.findOne({ groupName: roomId });
-        if(!group) return;
-        const keymessage = await Recommend.findOne({
-  $or: [
-    { key: { $regex: message.trim(), $options: 'i' } },
-  ]
-});
-
-        console.log("keymessage",keymessage)
-        if(keymessage){
-            socket.to(roomId).emit("typing", { username });
-            socket.emit("recommendation", { recommendations: keymessage.recommendedMessages });
-        }
+    socket.on("typing", async({ roomId, username}) => {
         socket.to(roomId).emit("typing", { username});
     });
     socket.on("stopTyping", ({ roomId, username }) => {
         socket.to(roomId).emit("hidetyping", { username });
     });
 
+    socket.on("recommendUser", async({roomId , username}) => {
+        const group = await UserGroup.findOne({ groupName: roomId });
+        if(!group) return;
+      if (!group.messages.length) return;
+
+const lastMessageObj = group.messages[group.messages.length - 1];
+
+     const words = lastMessageObj.message.toLowerCase().split(" ");
+
+  const keymessage = await Recommend.findOne({
+    key: { $in: words }
+  });
+
+        console.log("keymessage",keymessage)
+        if(keymessage){
+            socket.broadcast.emit("recommendation", { recommendations: keymessage.recommendedMessages });
+        }
+    })
               
 
     // Delete room
