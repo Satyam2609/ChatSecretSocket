@@ -9,6 +9,7 @@ import { Recommend } from "./models/user.Recommendation.js"; // backend folder s
 
 
 
+
 dotenv.config(); // Render me relative path ka tension nahi
 
 // Connect MongoDB
@@ -107,8 +108,15 @@ const lastMessageObj = group.messages[group.messages.length - 1];
     socket.on("deletemember", async ({ roomId, username }) => {
         const group = await UserGroup.findOne({ groupName: roomId });
         if (!group) return;
-        group.members = group.members.filter(member => member !== username);
+       if(username === group.creator){
+         group.members = group.members.filter(member => member !== username);
         await group.save();
+       }
+       else{
+        socket.emit("notice" ,(msg) => {
+            msg("Only admin can remove himself from the group")
+        })
+       }
     });
 
     // Join room
