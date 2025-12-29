@@ -93,7 +93,7 @@ const lastMessageObj = group.messages[group.messages.length - 1];
 
         console.log("keymessage",keymessage)
         if(keymessage){
-            socket.broadcast.emit("recommendation", { recommendations: keymessage.recommendedMessages });
+            socket.emit("recommendation", { recommendations: keymessage.recommendedMessages });
         }
     })
               
