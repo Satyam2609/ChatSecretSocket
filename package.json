@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev":"nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -12,10 +13,13 @@
   "type": "module",
   "dependencies": {
     "cloudinary": "^2.8.0",
+    "cookie": "^1.1.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.20.1",
+    "nodemon": "^3.1.14",
     "socket.io": "^4.8.1"
   }
 }

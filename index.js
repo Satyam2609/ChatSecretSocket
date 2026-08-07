@@ -5,7 +5,11 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserGroup from "./models/user.group.js";
-import { Recommend } from "./models/user.Recommendation.js"; // backend folder structure ke hisab se
+import { Recommend } from "./models/user.Recommendation.js";
+import { User } from "./models/user.model.js";
+import jwt from "jsonwebtoken"
+import cookie from "cookie" // backend folder structure ke hisab se
+
 
 
 
@@ -30,13 +34,44 @@ app.use(cors({
 // HTTP + Socket.io setup
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: process.env.FRONTEND_URL || "*",
-        methods: ["GET", "POST"],
-    }
+  cors: {
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST"],
+    credentials: true,
+  }
 });
 
 const userSocket = new Map()
+
+io.use(async (socket, next) => {
+  try {
+    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+     console.log("COOKIE =>", socket.handshake.headers.cookie);
+
+    console.log(cookies); // Debug
+
+    const token = cookies.accesstoken;
+
+    if (!token) {
+      return next(new Error("Token not found"));
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return next(new Error("User not found"));
+    }
+
+    socket.user = user;
+
+    next();
+  } catch (err) {
+    console.log(err);
+    next(new Error("Unauthorized"));
+  }
+});
 
 io.on("connection", async (socket) => {
     console.log(`User connected: ${socket.id}`);
@@ -100,8 +135,18 @@ const lastMessageObj = group.messages[group.messages.length - 1];
 
     // Delete room
     socket.on("delete", async (roomId) => {
+        const findcreator = await UserGroup.findOne({groupName:roomId})
+        const creator = findcreator.creator
+        console.log(creator)
+        
+        const finduser = await User.findOne({username:creator})
+        
+      if (!finduser._id.equals(socket.user._id)) {
+    return socket.emit("error", "Only creator can delete the group");
+}
         const group = await UserGroup.findOneAndDelete({ groupName: roomId });
-        if (!group) socket.emit("error", `Room ${roomId} does not exist`);
+        socket.emit("deleteSuccess", roomId);
+        
     });
 
     // Delete member
