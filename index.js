@@ -40,6 +40,9 @@ const io = new Server(server, {
     credentials: true,
   }
 });
+io.engine.on("initial_headers", (headers, request) => {
+  console.log("SOCKET REQUEST COOKIE:", request.headers.cookie);
+});
 
 const userSocket = new Map()
 
