@@ -26,16 +26,21 @@ const app = express();
 app.use(express.json());
 
 // CORS setup
+const allowedOrigins = [
+  process.env.FRONTEND_URL
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "*",
-     credentials: true,
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 // HTTP + Socket.io setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   }
