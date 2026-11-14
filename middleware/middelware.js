@@ -1,6 +1,6 @@
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
-import User from "./models/user.model.js";
+import User from "./models/user.model.js"
 
 io.use(async (socket, next) => {
     try {
