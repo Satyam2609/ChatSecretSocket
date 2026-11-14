@@ -45,35 +45,7 @@ io.engine.on("initial_headers", (headers, request) => {
 
 const userSocket = new Map()
 
-io.use(async (socket, next) => {
-  try {
-    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-     console.log("COOKIE =>", socket.handshake.headers.cookie);
 
-    console.log(cookies); // Debug
-
-    const token = cookies.accesstoken;
-
-    if (!token) {
-      return next(new Error("Token not found"));
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return next(new Error("User not found"));
-    }
-
-    socket.user = user;
-
-    next();
-  } catch (err) {
-    console.log(err);
-    next(new Error("Unauthorized"));
-  }
-});
 
 io.on("connection", async (socket) => {
     console.log(`User connected: ${socket.id}`);
