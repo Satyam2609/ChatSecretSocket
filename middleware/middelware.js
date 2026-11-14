@@ -6,7 +6,7 @@ io.use(async (socket, next) => {
     try {
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
 
-        const token = cookies.token; // cookie ka naam
+        const token = cookies.accesstoken; // cookie ka naam
 
         if (!token) return next(new Error("Unauthorized"));
 
