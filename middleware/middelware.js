@@ -11,7 +11,7 @@ io.use(async (socket, next) => {
 
         if (!token) return next(new Error("Unauthorized"));
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
 
         const user = await User.findById(decoded.id);
 

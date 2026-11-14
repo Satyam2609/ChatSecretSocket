@@ -8,11 +8,10 @@ import UserGroup from "./models/user.group.js";
 import { Recommend } from "./models/user.Recommendation.js";
 import { User } from "./models/user.model.js";
 import jwt from "jsonwebtoken"
-import cookie from "cookie" // backend folder structure ke hisab se
+import cookie from "cookie" 
+import cookieParser from "cookie-parser";
 
-
-
-
+app.use(cookieParser());
 
 dotenv.config(); // Render me relative path ka tension nahi
 
