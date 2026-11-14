@@ -5,6 +5,7 @@ import {User} from "../../socket/models/user.model.js"
 io.use(async (socket, next) => {
     try {
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+        console.log("COOKIE =>", socket.handshake.headers.cookie);
 
         const token = cookies.accesstoken; // cookie ka naam
 
